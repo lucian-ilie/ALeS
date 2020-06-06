@@ -2,9 +2,9 @@
 
 **Author:**
 
-Arnab Mallik, Lucian Ilie
-Arnab Mallik (amallik3@uwo.ca), Lucian Ilie (ilie@uwo.ca)
-Department of Computer Science
+Arnab Mallik, Lucian Ilie  
+Arnab Mallik (amallik3@uwo.ca), Lucian Ilie (ilie@uwo.ca)  
+Department of Computer Science  
 The University of Western Ontario, London, Ontario, Canada
 
 **Description:**
