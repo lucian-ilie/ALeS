@@ -17,7 +17,7 @@ ALeS will benefit numerous software programs in a variety of areas, including tr
 
 **Installation:**
 
-g++ compiler is required to run ALeS.
+g++ compiler is required to run ALeS.  
 Download all files from the repository, navigate to ALeS directory and compile ALeS.cpp using the **make** command.
 
 **How to run ALeS:**
