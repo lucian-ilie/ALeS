@@ -513,7 +513,7 @@ void makeHomologousRegion(double p, int N){
 	std::mt19937 rng{rd()}; // rng
 	std::bernoulli_distribution distribution(p);
 	
-	cout << "Creating array to estimate sensitivity ..." << endl<<endl;
+	cout << "Creating array to estimate sensitivity ..." << endl;
 	if(N <= 32){
 		homologous_array_32 = new uint32_t[array_size];
 		for(int i = 0; i < array_size; i++){	
