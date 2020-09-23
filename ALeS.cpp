@@ -9,22 +9,29 @@
 #include <iostream>
 #include <bitset>
 #include <chrono>
-#include <omp.h>
-#include <sys/sysinfo.h>
+#if defined(__APPLE__)
+	#include <sys/types.h>
+	#include <sys/sysctl.h>
+#elif defined(__linux__) || defined(__linux) || defined(linux) || defined(__gnu_linux__)
+	#include <omp.h>
+	#include <sys/sysinfo.h>
+#endif
+
 
 using namespace std;
 
-int* l;							// Seeds lengths
-int k; 							// Number of seeds
-int N;							// Length of the random region R
-double p;						// Similarity level
-int w;							// Weight
-bool mode;						// mode decides if sensitivity (0) or estimated sensitivity (1) will be used.
+int* l;								// Seeds lengths
+int k; 								// Number of seeds
+int N;								// Length of the random region R
+double p;							// Similarity level
+int w;								// Weight
+bool mode;							// mode decides if sensitivity (0) or estimated sensitivity (1) will be used.
 bool bestMode = 0;					// variable used to control print statement
 int estCount = 0;					// variable used to control print statement
-double optimized_best = 0.0;				// holds the best sensitivity obtained in the function findOptimal()
+double optimized_best = 0.0;		// holds the best sensitivity obtained in the function findOptimal()
 int original_m = 0;					// resets the m value in adaptive length algorithm
 int original_M = 0;					// resets the M value in adaptive length algorithm
+bool isRegionCreated = false;		// makes sure homologous_array is created only once
 
 /*
  * Precomputed arrays:
@@ -284,6 +291,7 @@ uint128_t *homologous_array_128;			// can store upto 128 bit long random region
 uint64_t *homologous_array_64;				// can store upto 64 bit long random region
 uint32_t *homologous_array_32;				// can store upto 32 bit long random region
 long double totalVirtualMem = 0.0;			// total memory of system - decides when to switch to estimated sensitivity
+int homologous_array_size = 0;				// size of the homologous array to be created if necessary
 
 // prints an array (used for printing seeds)
 void printArray2(char** array,int length)
@@ -498,9 +506,14 @@ int64_t MULTIPLE_SWAP1_OVERLAPS_FAST(char** SEEDS, int NO_SEEDS)
 // used to estimate the sensitivity
 void makeHomologousRegion(double p, int N){
 	
+	if(isRegionCreated)
+		return;
+	
 	std::random_device rd{}; // use to seed the rng
 	std::mt19937 rng{rd()}; // rng
 	std::bernoulli_distribution distribution(p);
+	
+	cout << "Creating array to estimate sensitivity ..." << endl<<endl;
 	if(N <= 32){
 		homologous_array_32 = new uint32_t[array_size];
 		for(int i = 0; i < array_size; i++){	
@@ -697,10 +710,13 @@ double MultipleSensitivity(char** SEEDS, int NO_SEEDS, long long N, double P, do
 		}
 		long long NO_BS = MAX_NO_BS;
 		// If memory is not sufficient to calculate real sensitivity, estimated sensitivity is used
+		//7 is multiplied as BS[0].size = 7
 		long double arraySize = ((NO_BS * 7 * 8.0) / (1024 * 1024 * 1024));
 		double totalRam = (totalVirtualMem / (1024 * 1024 *1024) * 1.0);
-
+		
 		if(((totalRam * 0.9) < arraySize) || ((totalRam * 0.9) < (arraySize * floor(totalRam)))){		// try to filter using less expensive operations
+			makeHomologousRegion(P, N);
+			isRegionCreated = true;
 			MAX_NO_BS = NO_BS = 0;
 			delete[] seed_length; delete[] INT_REV_SEEDS;
 			return ESTIMATE_SENSITIVITY(SEEDS, NO_SEEDS, N);
@@ -1183,6 +1199,7 @@ double RANDOM_START_SWAP_FOR_OC_WITH_RANDOM_LENGTH(int m, int M, int weight, int
 	
 	t[0] = clock()/ 1000000.0;
 	for (k=0; k<tries; k++) { // try "tries" times starting with random seeds and OC them
+	cout<<k<<endl;
 		// initialize seeds randomly
 		badMove++;
 		if(nSeeds == 1){
@@ -1277,7 +1294,7 @@ double RANDOM_START_SWAP_FOR_OC_WITH_RANDOM_LENGTH(int m, int M, int weight, int
 				else{
 					if(estCount == 0){
 						cout<<endl<<"Seeds found for which Real Sensitivity cannot be computed because of Insufficient Memory"<<endl;
-						cout<<"Estimated Sensitivity will be used to prevent ALeS from Crashing!!!"<<endl<<endl;
+						cout<<"Estimated Sensitivity will be used to prevent ALeS from Crashing!!!"<<endl;
 						estCount = 1;
 					}
 					cout << "Estimated sensitivity = " << bestSens <<endl<<endl;
@@ -1300,13 +1317,31 @@ void ALeS(char** S){
 	srand((unsigned )(time(0)));
 	double t[2];
 	// calculating the total memory available in the system to prevent the code from crashing while computing sensitivity.
-	struct sysinfo si;
-	sysinfo (&si);
-	totalVirtualMem = (si.totalram + si.totalswap);
-	totalVirtualMem *= si.mem_unit;
+	//total virtual memory of the system is total memory available - (1.5 time the size of homologous array)
+	//1.5 times the size is used for safety
+	
+	//if linux system detected
+	#if defined(__linux__) || defined(__linux) || defined(linux) || defined(__gnu_linux__)
+        struct sysinfo si;
+        sysinfo (&si);
+        totalVirtualMem = (si.totalram + si.totalswap);
+        totalVirtualMem *= si.mem_unit;
+		totalVirtualMem -= 1.5 * homologous_array_size;
+	//if apple system detected
+    #elif defined(__APPLE__)
+		long long memSize;
+		size_t length = sizeof(long long);
+		int mib[4] = {0,0,0,0};
+		size_t miblen = sizeof(mib)/sizeof(int);
+		sysctlnametomib("hw.memsize", mib, &miblen);
+		int iError = sysctl(mib, 2, &memSize, &length, NULL, 0);
+		if(iError != 0)
+			cout<<"Error calculating memory"<<endl;
+		totalVirtualMem = memSize;
+		totalVirtualMem-= 1.5 * homologous_array_size;
+	#endif
 	
 	t[0] = clock()/ 1000000.0;
-	
 	int m = 0;// min
 	int M = 0;// max
 	
@@ -1321,7 +1356,7 @@ void ALeS(char** S){
 		m = w+1; // try a wide range of lengths for single seeds
 		cout << "The program starts computing ..."<<endl;
 		cout << "If you reach a seed with your desired sensitivity you can kill the program ... "<<endl;
-		makeHomologousRegion(p, N);
+		cout<< endl;
 		RANDOM_START_SWAP_FOR_OC_WITH_RANDOM_LENGTH(m, M, w, l, S, k, 500, N, p, 0);
 	}
 	else{
@@ -1331,7 +1366,7 @@ void ALeS(char** S){
 		cout << "ALeS initial seed set is: "<<endl<<endl;
 		printArray2(S,k);
 		cout << "Computed in "<<t[1]-t[0]<< " seconds" << endl;
-		makeHomologousRegion(p, N);
+		cout<< endl;
 		double sensitivity = 0.0;
 		sensitivity = MultipleSensitivity(S, k, N, p , totalVirtualMem);
 		bestMode = mode;
@@ -1356,15 +1391,26 @@ void ALeS(char** S){
 	}
 }
 
+//verbose mode
+void verbose(){
+	
+	cerr << "Four arguments required; different number given\n"
+		<< "command line should be:\n"
+		<< "./ALeS <weight> <numberOfSeeds> <similarity> <lengthOfHomologyRegion>\n";
+	cerr<<" <weight> : Number of match positions in each seed"<<endl;
+	cerr<<" <numberOfSeeds> : Number of seeds"<<endl;
+	cerr<<" <similarity> : Similarity level"<<endl;
+	cerr<<" <lengthOfHomologyRegion> : Length of homologous region"<<endl;
+}
+
 // MAIN 
 int main(int argc, char **argv) 
 {
 	double ttime[2] = {0, 0};
 	ttime[0] = clock()/ 1000000.0;
+	
 	if (argc != 5) {
-		cerr << "four arguments required; different number given\n"
-		<< "command line should be:\n"
-		<< "./ALeS <weight> <numberOfSeeds> <similarity> <lengthOfHomologyRegion>\n";
+		verbose();
 		exit(1);
 	}
 	// set parameters`
@@ -1372,17 +1418,46 @@ int main(int argc, char **argv)
 	k = atoi(argv[2]);  // number of seeds
 	p = atof(argv[3]);  // similarity
 	N = atoi(argv[4]);  // length of homology region
-	l = new int[k];				// seeds' lengths array
+	l = new int[k];		// seeds' lengths array
+	
+	//calculating the array size in advance required for estimating sensitivity
+	if(N <= 32)
+		homologous_array_size = array_size * sizeof(uint32_t);
+	else if(N <= 64) 
+		homologous_array_size = array_size * sizeof(uint64_t);
+	else
+		homologous_array_size = array_size * sizeof(uint128_t);
+	
 	char** S = new char* [k];   // set of seeds
 	for(int i = 0;i < k;i++)
 		S[i] = new char[100];
 	try{
+		if(w < 1 || w >= N){
+			cerr<<"Invalid seed weight !!!"<<endl;
+			verbose();
+			return 1;
+		}
+		if(k < 1){
+			cerr<<"Invalid number of seeds !!!"<<endl;
+			verbose();
+			return 1;
+		}
+		if(p < 0 || p > 1){
+			cerr<<"Invalid similarity level !!!"<<endl;
+			verbose();
+			return 1;
+		}
+		if(N <= 0 || N > 127){
+			cerr<<"Invalid region length !!!"<<endl;
+			verbose();
+			return 1;
+		}
 		ALeS(S);
 	}catch(std::bad_alloc){
 		cerr << "Memory error (Allocation failed)"<<endl
 		<<"You probably need more memory to run this program"<<endl;
 	}
 	ttime[1] = clock()/ 1000000.0; 
-	cout << "Total time (1000 iterations): " << ttime[1]-ttime[0]<< " seconds" << endl;
+	cout << "Total time (500 iterations): " << ttime[1]-ttime[0]<< " seconds" << endl;
 	return 0;
 }
