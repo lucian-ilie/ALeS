@@ -513,6 +513,8 @@ void makeHomologousRegion(double p, int N){
 	std::mt19937 rng{rd()}; // rng
 	std::bernoulli_distribution distribution(p);
 	
+	cout<<endl<<"Seeds found for which Real Sensitivity cannot be computed because of Insufficient Memory"<<endl;
+	cout<<"Estimated Sensitivity will be used to prevent ALeS from Crashing!!!"<<endl<<endl;
 	cout << "Creating array to estimate sensitivity ..." << endl;
 	if(N <= 32){
 		homologous_array_32 = new uint32_t[array_size];
@@ -1293,8 +1295,8 @@ double RANDOM_START_SWAP_FOR_OC_WITH_RANDOM_LENGTH(int m, int M, int weight, int
 					cout << "Real sensitivity = " << bestSens << endl;
 				else{
 					if(estCount == 0){
-						cout<<endl<<"Seeds found for which Real Sensitivity cannot be computed because of Insufficient Memory"<<endl;
-						cout<<"Estimated Sensitivity will be used to prevent ALeS from Crashing!!!"<<endl;
+						//cout<<endl<<"Seeds found for which Real Sensitivity cannot be computed because of Insufficient Memory"<<endl;
+						//cout<<"Estimated Sensitivity will be used to prevent ALeS from Crashing!!!"<<endl;
 						estCount = 1;
 					}
 					cout << "Estimated sensitivity = " << bestSens <<endl<<endl;
@@ -1374,8 +1376,8 @@ void ALeS(char** S){
 			cout << "Real Sensitivity is " << sensitivity << endl;
 		else{
 			if(estCount == 0){
-				cout<<endl<<"Seeds found for which Real Sensitivity cannot be computed because of Insufficient Memory"<<endl;
-				cout<<"Estimated Sensitivity will be used to prevent ALeS from Crashing!!!"<<endl<<endl;
+				//cout<<endl<<"Seeds found for which Real Sensitivity cannot be computed because of Insufficient Memory"<<endl;
+				//cout<<"Estimated Sensitivity will be used to prevent ALeS from Crashing!!!"<<endl<<endl;
 				estCount = 1;
 			}
 			cout<< "Estimated Sensitivity is "<<sensitivity<<endl;
