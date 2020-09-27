@@ -37,12 +37,13 @@ This will generate 4 spaced seeds, each of weight 10 having similarity level of 
 
 The software produces multiple spaced seeds as output along with its sensitivity value.
 For the command shown above, a sample ALeS output would be: 
-
+```
 1111010110111  
 1110100110001111  
 1110101000100100111  
 110110000100001000101011  
-Real sensitivity = 0.90968  
+Real sensitivity = 0.90968
+```
 
 **Cite:**
 
