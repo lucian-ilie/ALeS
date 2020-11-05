@@ -1,4 +1,4 @@
-# ALeS: Adaptive-LEngth Spaced-seed design
+# ALeS: Adaptive-Length Spaced-seed design
 
 **Author:**
 
