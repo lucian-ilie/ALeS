@@ -47,3 +47,17 @@ Real sensitivity = 0.90968
 
 **Cite:**
 
+@article{10.1093/bioinformatics/btaa945,  
+    author = {Mallik, Arnab and Ilie, Lucian},  
+    title = "{ALeS: Adaptive-length spaced-seed design}",  
+    journal = {Bioinformatics},  
+    year = {2020},  
+    month = {11},  
+    abstract = "{Sequence similarity is the most frequently used procedure in biological research, as proved by the widely used BLAST program. The consecutive seed used by BLAST can be dramatically improved by considering multiple spaced seeds. Finding the best seeds is a hard problem and much effort went into developing heuristic algorithms and software for designing highly sensitive spaced seeds.We introduce a new algorithm and software, ALeS, that produces more sensitive seeds than the current state-of-the-art programs, as shown by extensive testing. We also accurately estimate the sensitivity of a seed, enabling its computation for arbitrary seeds.The source code is freely available at github.com/lucian-ilie/ALeS.Supplementary data are available at Bioinformatics online.}",  
+    issn = {1367-4803},  
+    doi = {10.1093/bioinformatics/btaa945},  
+    url = {https://doi.org/10.1093/bioinformatics/btaa945},  
+    note = {btaa945},  
+    eprint = {https://academic.oup.com/bioinformatics/advance-article-pdf/doi/10.1093/bioinformatics/btaa945/34109161/btaa945.pdf},  
+}
+
