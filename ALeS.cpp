@@ -25,6 +25,7 @@ int k; 								// Number of seeds
 int N;								// Length of the random region R
 double p;							// Similarity level
 int w;								// Weight
+int upperBound;						//Upper bound of seed lengths
 bool mode;							// mode decides if sensitivity (0) or estimated sensitivity (1) will be used.
 bool bestMode = 0;					// variable used to control print statement
 int estCount = 0;					// variable used to control print statement
@@ -1009,6 +1010,12 @@ int add_position(char** S, int* l, int NO_SEEDS, long long N){
 	}
 
 	int length = l[seed_no];
+	//adding seed length upperbound
+	if(length + 1 > upperBound){
+		//cout<<"upperBound reached"<<endl;
+		return -1;
+	}
+	
 	l[seed_no] = length + 1;
 	char temp[length + 1];
 	for(int i = 0; i < pos; i++)
@@ -1201,7 +1208,13 @@ double RANDOM_START_SWAP_FOR_OC_WITH_RANDOM_LENGTH(int m, int M, int weight, int
 	
 	t[0] = clock()/ 1000000.0;
 	for (k=0; k<tries; k++) { // try "tries" times starting with random seeds and OC them
-	cout<<k<<endl;
+		cout<<k<<endl;
+		//adding upper limit to seed length
+		if(M > upperBound){
+			//cout<<"upperBound reached"<<endl;
+			M = upperBound;
+		}
+	
 		// initialize seeds randomly
 		badMove++;
 		if(nSeeds == 1){
@@ -1352,6 +1365,12 @@ void ALeS(char** S){
 	if (m < w) m = w;
 	if (M < m) M = m;
 	
+	//restricting max seed length to upper bound
+	if(M > upperBound){
+		//cout<<"upperBound reached"<<endl;
+		M = upperBound;
+	}
+		
 	cout<<"Generating "<< k << " seeds of weight "<<w<<" for similarity level "<< p <<" and length of homology region "<< N<<endl<<endl;
 	
 	if (k == 1){
@@ -1396,13 +1415,14 @@ void ALeS(char** S){
 //verbose mode
 void verbose(){
 	
-	cerr << "Four arguments required; different number given\n"
+	cerr << "Four / Five arguments required; different number given\n"
 		<< "command line should be:\n"
-		<< "./ALeS <weight> <numberOfSeeds> <similarity> <lengthOfHomologyRegion>\n";
+		<< "./ALeS <weight> <numberOfSeeds> <similarity> <lengthOfHomologyRegion> [<upperBound>]\n";
 	cerr<<" <weight> : Number of match positions in each seed"<<endl;
 	cerr<<" <numberOfSeeds> : Number of seeds"<<endl;
 	cerr<<" <similarity> : Similarity level"<<endl;
 	cerr<<" <lengthOfHomologyRegion> : Length of homologous region"<<endl;
+	cerr<<" <upperBound> [optional] : Seed length upper bound"<<endl;
 }
 
 // MAIN 
@@ -1411,7 +1431,7 @@ int main(int argc, char **argv)
 	double ttime[2] = {0, 0};
 	ttime[0] = clock()/ 1000000.0;
 	
-	if (argc != 5) {
+	if (argc < 5 || argc > 6) {
 		verbose();
 		exit(1);
 	}
@@ -1420,6 +1440,11 @@ int main(int argc, char **argv)
 	k = atoi(argv[2]);  // number of seeds
 	p = atof(argv[3]);  // similarity
 	N = atoi(argv[4]);  // length of homology region
+	if(argc == 5)
+		upperBound = 127;
+	else
+		upperBound = atoi(argv[5]);  // upper bound of seed lengths
+	
 	l = new int[k];		// seeds' lengths array
 	
 	//calculating the array size in advance required for estimating sensitivity
@@ -1451,6 +1476,11 @@ int main(int argc, char **argv)
 		}
 		if(N <= 0 || N > 127){
 			cerr<<"Invalid region length !!!"<<endl;
+			verbose();
+			return 1;
+		}
+		if(upperBound > 127){
+			cerr<<"Invalid seed upper bound !!!"<<endl;
 			verbose();
 			return 1;
 		}
