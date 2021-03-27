@@ -968,6 +968,13 @@ void PRECOMPUTE_MIN_MAX(int& m, int& M){
 			M =  (int)round(-1.1686 + 0.3576*k + 1.4462*w + 0.1366*N);
 		}
 	}
+
+	//enforcing seed length upperbound
+	if(m > upperBound)
+		m = upperBound;
+	if(M > upperBound)
+		M = upperBound;
+
 	// used in resetting the adaptive length algorithm
 	original_m = m;
 	original_M = M;
@@ -1010,11 +1017,9 @@ int add_position(char** S, int* l, int NO_SEEDS, long long N){
 	}
 
 	int length = l[seed_no];
-	//adding seed length upperbound
-	if(length + 1 > upperBound){
-		//cout<<"upperBound reached"<<endl;
+	//if any seed length is greater than the length upperbound, then ignore that operation
+	if(length + 1 > upperBound)
 		return -1;
-	}
 	
 	l[seed_no] = length + 1;
 	char temp[length + 1];
@@ -1208,12 +1213,7 @@ double RANDOM_START_SWAP_FOR_OC_WITH_RANDOM_LENGTH(int m, int M, int weight, int
 	
 	t[0] = clock()/ 1000000.0;
 	for (k=0; k<tries; k++) { // try "tries" times starting with random seeds and OC them
-		cout<<k<<endl;
-		//adding upper limit to seed length
-		if(M > upperBound){
-			//cout<<"upperBound reached"<<endl;
-			M = upperBound;
-		}
+		//cout<<k<<endl;
 	
 		// initialize seeds randomly
 		badMove++;
@@ -1364,12 +1364,6 @@ void ALeS(char** S){
 	// ensuring that w <= m <= M
 	if (m < w) m = w;
 	if (M < m) M = m;
-	
-	//restricting max seed length to upper bound
-	if(M > upperBound){
-		//cout<<"upperBound reached"<<endl;
-		M = upperBound;
-	}
 		
 	cout<<"Generating "<< k << " seeds of weight "<<w<<" for similarity level "<< p <<" and length of homology region "<< N<<endl<<endl;
 	
@@ -1441,7 +1435,7 @@ int main(int argc, char **argv)
 	p = atof(argv[3]);  // similarity
 	N = atoi(argv[4]);  // length of homology region
 	if(argc == 5)
-		upperBound = 127;
+		upperBound = N;
 	else
 		upperBound = atoi(argv[5]);  // upper bound of seed lengths
 	
@@ -1479,8 +1473,8 @@ int main(int argc, char **argv)
 			verbose();
 			return 1;
 		}
-		if(upperBound > 127){
-			cerr<<"Invalid seed upper bound !!!"<<endl;
+		if(upperBound > N || upperBound < w){
+			cerr<<"Invalid seed length upper bound !!!"<<endl;
 			verbose();
 			return 1;
 		}
