@@ -1368,7 +1368,8 @@ void ALeS(char** S){
 	cout<<"Generating "<< k << " seeds of weight "<<w<<" for similarity level "<< p <<" and length of homology region "<< N<<endl<<endl;
 	
 	if (k == 1){
-		m = w+1; // try a wide range of lengths for single seeds
+		if(upperBound > w)
+			m = w+1; // try a wide range of lengths for single seeds
 		cout << "The program starts computing ..."<<endl;
 		cout << "If you reach a seed with your desired sensitivity you can kill the program ... "<<endl;
 		cout<< endl;
@@ -1473,9 +1474,16 @@ int main(int argc, char **argv)
 			verbose();
 			return 1;
 		}
-		if(upperBound > N || upperBound < w){
+		if(upperBound >= N){
 			cerr<<"Invalid seed length upper bound !!!"<<endl;
-			verbose();
+			cerr<<"length upper bound must be < region length !!!"<<endl;
+			//verbose();
+			return 1;
+		}
+		if(upperBound < w){
+			cerr<<"Invalid seed length upper bound !!!"<<endl;
+			cerr<<"length upper bound must be >= seed weight !!!"<<endl;
+			//verbose();
 			return 1;
 		}
 		ALeS(S);
