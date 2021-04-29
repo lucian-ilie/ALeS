@@ -36,7 +36,7 @@ This will generate 4 spaced seeds, each of weight 10 having similarity level of 
 ```
 ./ALeS 10 4 .75 50 20
 ```
-This will generate 4 spaced seeds, each of weight 10 having similarity level of 0.75 for region length 50 and the seeds can have a maximum length of 20. Last argument is optional and ALeS accepts 4 arguments by default.
+This will generate 4 spaced seeds, each of weight 10 having similarity level of 0.75 for region length 50 and the seeds can have a maximum length of 20. The last argument is optional and ALeS accepts 4 arguments by default.
 
 **Output:**
 
