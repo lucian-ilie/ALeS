@@ -1213,7 +1213,7 @@ double RANDOM_START_SWAP_FOR_OC_WITH_RANDOM_LENGTH(int m, int M, int weight, int
 	
 	t[0] = clock()/ 1000000.0;
 	for (k=0; k<tries; k++) { // try "tries" times starting with random seeds and OC them
-		//cout<<k<<endl;
+		cout<<k<<endl;
 	
 		// initialize seeds randomly
 		badMove++;
