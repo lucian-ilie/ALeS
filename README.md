@@ -26,13 +26,6 @@ Use the command format as shown:
 
 ```
 ./ALeS <weight_of_seed> <number_of_seeds> <similarity> <region_length> [<seed_length_upperBound>]
-
-<weight> : Number of match positions in each seed
-<numberOfSeeds> : Number of seeds
-<similarity> : Similarity level
-<lengthOfHomologyRegion> : Length of homologous region
-<seed_length_upperBound> [optional] : Seed length upper bound
-
 ```
 For example,
 ```
@@ -44,6 +37,14 @@ This will generate 4 spaced seeds, each of weight 10 having similarity level of 
 ./ALeS 10 4 .75 50 20
 ```
 This will generate 4 spaced seeds, each of weight 10 having similarity level of 0.75 for region length 50 and the seeds can have a maximum length of 20. The last argument is optional and ALeS accepts 4 arguments by default. This feature is available since the v_1.5 release.
+
+```
+<weight> : Number of match positions in each seed
+<numberOfSeeds> : Number of seeds
+<similarity> : Similarity level
+<lengthOfHomologyRegion> : Length of homologous region
+<seed_length_upperBound> [optional] : Seed length upper bound
+```
 
 **Output:**
 
