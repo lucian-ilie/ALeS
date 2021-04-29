@@ -25,13 +25,18 @@ Download all files from the repository, navigate to ALeS directory and compile A
 Use the command format as shown:
 
 ```
-./ALeS <weight_of_seed> <number_of_seeds> <similarity> <region_length>
+./ALeS <weight_of_seed> <number_of_seeds> <similarity> <region_length> [<upperBound>]
 ```
 For example,
 ```
 ./ALeS 10 4 .75 50
 ```
 This will generate 4 spaced seeds, each of weight 10 having similarity level of 0.75 for region length 50.
+
+```
+./ALeS 10 4 .75 50 20
+```
+This will generate 4 spaced seeds, each of weight 10 having similarity level of 0.75 for region length 50 and the seeds can have a maximum length of 20.
 
 **Output:**
 
