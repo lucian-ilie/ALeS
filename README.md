@@ -22,6 +22,7 @@ Download all files from the repository, navigate to ALeS directory and compile A
 
 **How to run ALeS:**
 
+ALeS accepts 4 arguments by default. Since the v_1.5 release, ALeS can accept an optional fifth argument which corresponds to the maximum seed length allowed.
 Use the command format as shown:
 
 ```
@@ -36,7 +37,7 @@ This will generate 4 spaced seeds, each of weight 10 having similarity level of 
 ```
 ./ALeS 10 4 .75 50 20
 ```
-This will generate 4 spaced seeds, each of weight 10 having similarity level of 0.75 for region length 50 and the seeds can have a maximum length of 20. The last argument is optional and ALeS accepts 4 arguments by default. This feature is available since the v_1.5 release.
+This will generate 4 spaced seeds, each of weight 10 having similarity level of 0.75 for region length 50 and the seeds can have a maximum length of 20. The last argument is optional.
 
 ```
 <weight> : Number of match positions in each seed
