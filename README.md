@@ -75,6 +75,6 @@ Real sensitivity = 0.90968
     eprint = {https://academic.oup.com/bioinformatics/advance-article-pdf/doi/10.1093/bioinformatics/btaa945/34109161/btaa945.pdf},  
 }
 
-**View Poster**
+**View Poster:**
 
 https://f1000research.com/posters/9-838 
