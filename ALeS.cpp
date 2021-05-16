@@ -1474,7 +1474,7 @@ int main(int argc, char **argv)
 			verbose();
 			return 1;
 		}
-		if(upperBound >= N){
+		if(upperBound > N){
 			cerr<<"Invalid seed length upper bound !!!"<<endl;
 			cerr<<"length upper bound must be < region length !!!"<<endl;
 			//verbose();
